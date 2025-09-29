@@ -5,6 +5,7 @@ const connectDB = require( "./config/db" )
 
 const PORT = process.env.PORT || 8000
 connectDB()
+app.use( express.json() )
 
 const recipeRoute = require( "./routes/recipe" )
 
