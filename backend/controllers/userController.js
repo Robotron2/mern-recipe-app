@@ -39,4 +39,15 @@ const userLogin = async ( req, res ) => {
 
 }
 
-module.exports = {userSignUp, userLogin}
+const getUserById = async ( req, res ) => {
+    const userId = req.params.id
+    const user = await User.findById( userId )
+    if ( !user ) {
+        return res.status( 404 ).json( {message: "User not found"} )
+    }
+
+    return res.status( 200 ).json( {user} )
+
+}
+
+module.exports = {userSignUp, userLogin, getUserById}
