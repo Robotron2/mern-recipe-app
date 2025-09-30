@@ -1,28 +1,65 @@
 import "./App.css"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Home from "./pages/Home"
-import MainNavigation from "./components/MainNavigation"
-import axios from "axios"
+import Navbar from "./components/Navbar"
+// import RecipeDetail from "./pages/RecipeDetail"
+// import MyRecipe from "./pages/MyRecipe"
+// import FavRecipe from "./pages/FavRecipe"
+// import EditRecipe from "./pages/EditRecipe" /
 
-const getAllRecipes = async () => {
-	let allRecipes = []
-	const api = import.meta.VITE_API_URL
-	await axios.get(`${api}/recipe`).then((res) => {
-		allRecipes = res.data
-	})
-	return allRecipes
+// ✅ Dummy Protected Route wrapper
+const ProtectedRoute = ({ children }) => {
+	const token = localStorage.getItem("token")
+	if (!token) {
+		// Redirect unauthenticated users to home (or login modal)
+		return <Navigate to="/" replace />
+	}
+	return children
 }
 
-const router = createBrowserRouter([
-	{ path: "/", element: <MainNavigation />, children: [{ path: "/", element: <Home />, loader: getAllRecipes }] },
-])
-
-const App = () => {
+export default function App() {
 	return (
-		<>
-			<RouterProvider router={router}></RouterProvider>
-		</>
+		<Router>
+			<Navbar />
+			<Routes>
+				{/* Home */}
+				<Route path="/" element={<Home />} />
+
+				{/* Protected Routes */}
+				<Route
+					path="/myRecipe"
+					element={
+						<ProtectedRoute>
+							<MyRecipe />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/favRecipe"
+					element={
+						<ProtectedRoute>
+							<FavRecipe />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* Dynamic routes */}
+				<Route path="/recipe/:id" element={<RecipeDetail />} />
+				<Route
+					path="/editRecipe/:id"
+					element={
+						<ProtectedRoute>
+							<EditRecipe />
+						</ProtectedRoute>
+					}
+				/>
+
+				{/* 404 fallback */}
+				<Route
+					path="*"
+					element={<h2 style={{ textAlign: "center", marginTop: "2rem" }}>404 - Page not found</h2>}
+				/>
+			</Routes>
+		</Router>
 	)
 }
-
-export default App
