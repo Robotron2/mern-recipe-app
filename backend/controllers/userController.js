@@ -22,5 +22,21 @@ const userSignUp = async ( req, res ) => {
     return res.status( 200 ).json( {token, newUser} )
 
 }
+const userLogin = async ( req, res ) => {
+    const {email, password} = req.body
+    if ( !email || !password ) {
+        return res.status( 400 ).json( {message: "Email & password cannot be empty"} )
+    }
 
-module.exports = {userSignUp}
+    let user = await User.findOne( {email} )
+    if ( user && await bcrypt.compare( password, user.password ) ) {
+        const secretKey = process.env.SECRET_KEY
+        let token = jwt.sign( {email, id: user._id}, secretKey, {expiresIn: "60000"} )
+        return res.status( 200 ).json( {token, user} )
+    } else {
+        res.status( 400 ).json( {error: "Invalid Credentials"} )
+    }
+
+}
+
+module.exports = {userSignUp, userLogin}
