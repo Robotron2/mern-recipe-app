@@ -12,7 +12,7 @@ app.use( express.json() )
 const recipeRoute = require( "./routes/recipe" )
 const userRoute = require( "./routes/user" )
 
-app.use( "/users", userRoute )
+app.use( "/", userRoute )
 app.use( "/recipe", recipeRoute )
 
 app.listen( PORT, ( err ) => {
